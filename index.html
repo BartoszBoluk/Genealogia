@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8" />
+  <title>Drzewo genealogiczne</title>
+
+  <!-- Treant.js + Raphaël (potrzebne biblioteki) -->
+  <link rel="stylesheet" href="https://fperucic.github.io/treant-js/Treant.css">
+  <script src="https://fperucic.github.io/treant-js/vendor/raphael.js"></script>
+  <script src="https://fperucic.github.io/treant-js/Treant.js"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #f9f9f9;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    #tree {
+      width: 100%;
+      height: 85vh;
+      border: 1px solid #ddd;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .node {
+      padding: 6px 10px;
+      border-radius: 6px;
+      background: #f0f7ff;
+      border: 1px solid #c3d9ff;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+    .node p {
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>Moje drzewo genealogiczne</h1>
+  <div id="tree"></div>
+
+  <script>
+    // Ładowanie danych z pliku data.json
+    fetch('data.json')
+      .then(response => response.json())
+      .then(root => {
+        const chart_config = {
+          chart: {
+            container: "#tree",
+            levelSeparation: 50,
+            siblingSeparation: 30,
+            subTeeSeparation: 30,
+            rootOrientation: "NORTH"
+          },
+          nodeStructure: root
+        };
+        new Treant(chart_config);
+      })
+      .catch(error => {
+        console.error("Błąd ładowania danych:", error);
+        document.getElementById("tree").innerHTML = 
+          "<p style='color:red; text-align:center;'>Nie udało się wczytać pliku data.json</p>";
+      });
+  </script>
+</body>
+</html>

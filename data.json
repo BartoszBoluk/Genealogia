@@ -1,0 +1,31 @@
+{
+  "text": {
+    "name": "Pra-dziadek Jan"
+  },
+  "children": [
+    {
+      "text": {
+        "name": "Dziadek Adam"
+      },
+      "children": [
+        {
+          "text": {
+            "name": "Ojciec Piotr"
+          },
+          "children": [
+            {
+              "text": {
+                "name": "Ja - Micha�"
+              }
+            },
+            {
+              "text": {
+                "name": "Siostra Anna"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
