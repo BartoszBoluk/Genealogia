@@ -1,7 +1,7 @@
-id,name,parentId
-1,Zbigniew Junkiewicz
-2,Irena Junkiewicz
-3,Joanna Boluk,1
-4,Agnieszak Cichoñ,1
-5,Bartosz Boluk, 3
-6,Kamila Boluk, 3
+id,name,parentId,parentId2
+1,Zbigniew Junkiewicz,,
+2,Irena Junkiewicz,,
+3,Joanna Boluk,1,2
+4,Agnieszka Cichoñ,1,2
+5,Bartosz Boluk,3,
+6,Kamila Boluk,3,
