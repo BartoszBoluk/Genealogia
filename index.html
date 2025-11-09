@@ -1,70 +1,108 @@
-<!doctype html>
-<html lang="pl">
+<!DOCTYPE html>
+<html>
 <head>
-  <meta charset="utf-8" />
-  <title>Drzewo genealogiczne</title>
-
-  <!-- Treant.js + Raphaël (potrzebne biblioteki) -->
-  <link rel="stylesheet" href="https://fperucic.github.io/treant-js/Treant.css">
-  <script src="https://fperucic.github.io/treant-js/vendor/raphael.js"></script>
-  <script src="https://fperucic.github.io/treant-js/Treant.js"></script>
-
+  <title>Family Tree</title>
+  <script src="https://d3js.org/d3.v5.min.js"></script>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      background: #f9f9f9;
+    rect
+    {
+      fill:white;
+      stroke:silver;
+      width:160px;
+      height:40px;
+      stroke-width:2;
     }
-    h1 {
-      text-align: center;
-      margin-bottom: 20px;
+    path
+    {
+      fill:none;
+      stroke:silver;
+      stroke-width:2;
     }
-    #tree {
-      width: 100%;
-      height: 85vh;
-      border: 1px solid #ddd;
-      background: #fff;
-      border-radius: 10px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    text
+    {
+      dominant-baseline:middle;
+      text-anchor:middle;
     }
-    .node {
-      padding: 6px 10px;
-      border-radius: 6px;
-      background: #f0f7ff;
-      border: 1px solid #c3d9ff;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    .bigger
+    {
+      font-size:15px;
     }
-    .node p {
-      margin: 0;
+    .hide
+    {
+      visibility: hidden;
     }
   </style>
 </head>
 <body>
-  <h1>Moje drzewo genealogiczne</h1>
-  <div id="tree"></div>
-
   <script>
-    // Ładowanie danych z pliku data.json
-    fetch('data.json')
-      .then(response => response.json())
-      .then(root => {
-        const chart_config = {
-          chart: {
-            container: "#tree",
-            levelSeparation: 50,
-            siblingSeparation: 30,
-            subTeeSeparation: 30,
-            rootOrientation: "NORTH"
-          },
-          nodeStructure: root
-        };
-        new Treant(chart_config);
-      })
-      .catch(error => {
-        console.error("Błąd ładowania danych:", error);
-        document.getElementById("tree").innerHTML = 
-          "<p style='color:red; text-align:center;'>Nie udało się wczytać pliku data.json</p>";
+    var svg = d3.select("body").append("svg")
+                .attr("width", 1920).attr("height",1080)
+                .append("g").attr("transform", "translate(50,50)");
+    var data = [
+                {"child":"Zbigniew Junkiewicz", "parent":"", "spouse": "Irena Junkiewicz"},
+                {"child":"Joanna Boluk", "parent":"Zbigniew Junkiewicz", "spouse": "Zbigniew Boluk"},
+                {"child":"Agnieszka Cichoń", "parent":"Zbigniew Junkiewicz"},
+                {"child":"Bartosz Boluk", "parent":"Joanna Boluk"},
+                {"child":"Kamila Boluk", "parent":"Joanna Boluk"},
+];
+
+
+    var dataStructure = d3.stratify().id(function(d){return d.child;})
+                                    .parentId(function(d){return d.parent;})
+                                    (data);
+    var treeStructure = d3.tree().size([1600,300]);
+    var information = treeStructure(dataStructure);
+
+    var connections1 = svg.append("g").selectAll("path").data(information.links());
+
+    connections1.enter().append("path")
+      .attr("d", function(d){
+        return "M" + (d.source.x-20) + "," + d.source.y + " h 120 v 50 H" +
+        d.target.x + " V " + d.target.y;
+    });
+
+    var connections2 = svg.append("g").selectAll("path").data(information.links());
+
+    connections2.enter().append("path")
+      .attr("d", function(d){
+        return "M" + (d.source.x+40) + "," + d.source.y + " h 120";
+    });
+
+    var rectangles = svg.append("g").selectAll("rect").data(information.descendants());
+    rectangles.enter().append("rect")
+      .attr("x", function(d){return d.x-80;})
+      .attr("y", function(d){return d.y-20;});
+
+    var spouseRectangles = svg.append("g").selectAll("rect")
+                                .data(information.descendants());
+    
+    spouseRectangles.enter().append("rect")
+      .attr("x", function(d){return d.x+120;})
+      .attr("y", function(d){return d.y-20;})
+      .classed("hide", function(d) {
+        if(d.data.spouse == undefined)
+            return true;
+          else
+            return false;
       });
+
+    var names = svg.append("g").selectAll("text")
+                    .data(information.descendants());
+    names.enter().append("text")
+                  .text(function(d){return d.data.child;})
+                  .attr("x", function(d){return d.x;})
+                  .attr("y", function(d){return d.y;})
+                  .classed("bigger", false)
+
+    var spouseNames = svg.append("g").selectAll("text")
+                    .data(information.descendants());
+    spouseNames.enter().append("text")
+                  .text(function(d){return d.data.spouse;})
+                  .attr("x", function(d){return d.x+200;})
+                  .attr("y", function(d){return d.y;})
+
+    console.log(information.descendants());
+    console.log(information.links);
   </script>
 </body>
 </html>
