@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Rodzina Junkiewicz</title>
+  <script src="https://d3js.org/d3.v5.min.js"></script>
+  <style>
+    rect {
+      fill:white;
+      stroke:silver;
+      width:160px;
+      height:40px;
+      stroke-width:2;
+    }
+    path {
+      fill:none;
+      stroke:silver;
+      stroke-width:2;
+    }
+    text {
+      dominant-baseline:middle;
+      text-anchor:middle;
+    }
+    .bigger {
+      font-size:15px;
+    }
+    .hide {
+      visibility: hidden;
+    }
+    a.back {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-size: 18px;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+
+<a class="back" href="index.html">← Powrót</a>
+
+<script>
+    var svg = d3.select("body").append("svg")
+                .attr("width", 1920).attr("height",1080)
+                .append("g").attr("transform", "translate(50,50)");
+
+    var data = [
+        {"child":"Zbigniew Junkiewicz", "parent":"", "spouse": "Irena Junkiewicz"},
+        {"child":"Joanna Boluk", "parent":"Zbigniew Junkiewicz", "spouse": "Zbigniew Boluk"},
+        {"child":"Agnieszka Cichoń", "parent":"Zbigniew Junkiewicz", "spouse": "Arkadiusz Cichoń"},
+        {"child":"Bartosz Boluk \n ur. 03.04.1999r.", "parent":"Joanna Boluk"},
+        {"child":"Kamila Boluk", "parent":"Joanna Boluk"},
+        {"child":"Mateusz Cichoń", "parent":"Agnieszka Cichoń"},
+        {"child":"Jakub Cichoń", "parent":"Agnieszka Cichoń"},
+    ];
+
+    var dataStructure = d3.stratify()
+        .id(function(d){return d.child;})
+        .parentId(function(d){return d.parent;})
+        (data);
+
+    var treeStructure = d3.tree().size([1600,300]);
+    var information = treeStructure(dataStructure);
+
+    var connections1 = svg.append("g").selectAll("path").data(information.links());
+    connections1.enter().append("path")
+      .attr("d", function(d){
+        return "M" + (d.source.x-20) + "," + d.source.y + " h 120 v 50 H" +
+        d.target.x + " V " + d.target.y;
+    });
+
+    var connections2 = svg.append("g").selectAll("path").data(information.links());
+    connections2.enter().append("path")
+      .attr("d", function(d){
+        return "M" + (d.source.x+40) + "," + d.source.y + " h 120";
+    });
+
+    var rectangles = svg.append("g").selectAll("rect").data(information.descendants());
+    rectangles.enter().append("rect")
+      .attr("x", function(d){return d.x-80;})
+      .attr("y", function(d){return d.y-20;});
+
+    var spouseRectangles = svg.append("g").selectAll("rect")
+                                .data(information.descendants());
+    
+    spouseRectangles.enter().append("rect")
+      .attr("x", function(d){return d.x+120;})
+      .attr("y", function(d){return d.y-20;})
+      .classed("hide", function(d) {
+        return d.data.spouse === undefined;
+      });
+
+    var names = svg.append("g").selectAll("text")
+                    .data(information.descendants());
+    names.enter().append("text")
+                  .text(function(d){return d.data.child;})
+                  .attr("x", function(d){return d.x;})
+                  .attr("y", function(d){return d.y;})
+
+    var spouseNames = svg.append("g").selectAll("text")
+                    .data(information.descendants());
+    spouseNames.enter().append("text")
+                  .text(function(d){return d.data.spouse;})
+                  .attr("x", function(d){return d.x+200;})
+                  .attr("y", function(d){return d.y;})
+</script>
+
+</body>
+</html>
