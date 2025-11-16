@@ -20,3 +20,11 @@ D3.js jest ładowane z CDN, więc nie wymaga żadnych dodatkowych zależności a
 1. Pobierz lub sklonuj repozytorium:
    ```bash
    git clone https://github.com/<twoj-login>/genealogia.git
+
+---
+
+## 🌳 Adres strony
+
+1. Link do strony:
+   ```bash
+   https://bartoszboluk.github.io/Genealogia
